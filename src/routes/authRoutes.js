@@ -5,6 +5,7 @@ import {
   login,
 } from "../controllers/authController.js";
 
+import { verificarToken } from "../middleware/authMiddleware.js";
 import { body } from "express-validator";
 
 const router = express.Router();
@@ -65,6 +66,17 @@ router.post(
 
   login
 );
+
+// =====================================================
+// ROTA PROTEGIDA
+// =====================================================
+
+router.get("/me", verificarToken, async (req, res) => {
+  return res.status(200).json({
+    mensagem: "Você está autenticado.",
+    usuario: req.usuario,
+  });
+});
 
 
 export default router;
