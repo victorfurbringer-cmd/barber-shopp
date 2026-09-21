@@ -1,30 +1,54 @@
-const express=require("express");
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 
-const cors=require("cors");
+import authRoutes from "./routes/authRoutes.js";
 
-const helmet=require("helmet");
-
-
-const app=express();
-
-
-app.use(cors());
-
-app.use(helmet());
-
-app.use(express.json());
+const app = express();
 
 
-app.use("/auth",
-require("./routes/authRoutes"));
+// =====================================================
+// MIDDLEWARES
+// =====================================================
+
+app.use(
+  helmet()
+);
 
 
-app.use("/clientes",
-require("./routes/clienteRoutes"));
+app.use(
+  cors({
+    origin: "http://127.0.0.1:5500",
+  })
+);
 
 
-app.use("/agendamentos",
-require("./routes/agendamentoRoutes"));
+app.use(
+  express.json()
+);
 
 
-module.exports=app;
+// =====================================================
+// ROTAS
+// =====================================================
+
+app.use(
+  "/auth",
+  authRoutes
+);
+
+
+// =====================================================
+// ROTA TESTE
+// =====================================================
+
+app.get("/", (req, res) => {
+
+  res.json({
+    mensagem: "API Barber Shopp funcionando.",
+  });
+
+});
+
+
+export default app;
