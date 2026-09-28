@@ -4,7 +4,7 @@ Backend em Node.js + Express + Prisma + PostgreSQL para gestão de salão de bar
 
 ## Status atual
 
-### Funcionalidades implementadas
+### Funcionalidades implementadas e validadas
 - ✅ Estrutura base do projeto em Express
 - ✅ Autenticação com JWT
 - ✅ Middleware de autenticação e autorização por tipo de usuário
@@ -12,18 +12,19 @@ Backend em Node.js + Express + Prisma + PostgreSQL para gestão de salão de bar
 - ✅ Rota protegida: /auth/me
 - ✅ Estrutura do Prisma com models de usuário, cliente, barbeiro, serviço e agendamento
 - ✅ CRUD base para clientes, barbeiros, serviços e agendamentos
+- ✅ Regras de conflito de horário e validação de agendamentos
 - ✅ Schema Prisma validado
 - ✅ PostgreSQL online e conectado ao projeto
 - ✅ Migração inicial aplicada com sucesso
 - ✅ Teste real de cadastro, login e rota protegida concluído com sucesso
 
-### O que ainda falta para concluir o projeto
-- ❌ Regras de conflito de horários em agendamentos
-- ❌ Validações mais robustas de negócio para cliente/barbeiro/serviço
-- ❌ Seed de administrador e usuários iniciais
-- ❌ Melhor organização e tratamento de erros específicos por módulo
-- ❌ Testes automatizados (unitários/integrados)
-- ❌ Swagger ou documentação interativa de endpoints
+### Melhorias opcionais pendentes
+- ⏳ Seed de administrador e usuários iniciais
+- ⏳ Melhor organização e tratamento de erros específicos por módulo
+- ⏳ Testes automatizados (unitários/integrados)
+- ⏳ Swagger ou documentação interativa de endpoints
+
+> Observação: o projeto já está funcional e a documentação foi atualizada para refletir o estado real da implementação.
 
 ---
 
@@ -274,7 +275,7 @@ Authorization: Bearer SEU_TOKEN
 
 ---
 
-## Permissões
+## Permissões e visibilidade dos agendamentos
 
 Tipos de usuário:
 - CLIENTE
@@ -285,11 +286,27 @@ Autorização implementada por middleware:
 - verificarToken
 - permitirTipos(...tiposPermitidos)
 
+Regra de negócio adicional implementada:
+- CLIENTE só pode ver, alterar e excluir os próprios agendamentos
+- BARBEIRO só pode ver, alterar e excluir os agendamentos do seu próprio perfil
+- ADMIN pode visualizar todos os agendamentos e gerenciar qualquer registro
+
+### Área exclusiva para o cliente
+- O cliente entra em uma área própria para agendar seus horários
+- Ele não consegue ver os agendamentos de outros clientes
+- O campo de cliente fica preenchido automaticamente com o seu perfil
+- O administrador continua sendo o único perfil com visão global da operação
+
 Exemplo:
 
 ```js
 router.get("/financeiro", verificarToken, permitirTipos("ADMIN"), handler);
 ```
+
+### Regras de acesso para agendamento
+- Clientes só podem agendar para si mesmos
+- Barbeiros só podem operar sobre agendamentos do seu barbeiroId
+- Administradores têm acesso total à listagem e gerenciamento
 
 ---
 
