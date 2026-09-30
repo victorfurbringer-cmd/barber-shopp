@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Barber Shop</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="authScreen" class="auth-screen">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Admin</h1>
+          <p>Login da gestão da barbearia</p>
+        </div>
+
+        <form id="loginForm">
+          <input type="email" id="loginEmail" placeholder="Email do administrador" required />
+          <input type="password" id="loginSenha" placeholder="Senha" required />
+          <button type="submit">Entrar</button>
+        </form>
+        <p id="loginMensagem" class="message"></p>
+      </div>
+    </div>
+
+    <div id="appScreen" class="dashboard hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          <h2>Admin</h2>
+        </div>
+
+        <nav class="nav-menu">
+          <button class="nav-btn active" data-view="home">Home</button>
+          <button class="nav-btn" data-view="servicos">Serviços</button>
+          <button class="nav-btn" data-view="clientes">Clientes</button>
+          <button class="nav-btn" data-view="barbeiros">Barbeiros</button>
+          <button class="nav-btn" data-view="agendamentos">Agendamentos</button>
+        </nav>
+
+        <button id="logoutButton" class="logout-btn">Sair</button>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <h3>Painel administrativo</h3>
+            <p id="welcomeText">Bem-vindo</p>
+          </div>
+          <div id="userBadge" class="user-badge"></div>
+        </header>
+
+        <section id="home" class="view active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Total de agendamentos</span>
+              <strong id="totalAgendamentos">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Serviços</span>
+              <strong id="totalServicos">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Clientes</span>
+              <strong id="totalClientes">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Barbeiros</span>
+              <strong id="totalBarbeiros">0</strong>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <h4>Próximos agendamentos</h4>
+            <div id="pendingAppointments" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="servicos" class="view">
+          <div class="panel-box">
+            <h4>Novo serviço</h4>
+            <form id="servicoForm" class="inline-form">
+              <input id="servicoNome" placeholder="Nome" required />
+              <input id="servicoDescricao" placeholder="Descrição" />
+              <input id="servicoDuracao" type="number" min="15" step="15" placeholder="Duração (min)" required />
+              <input id="servicoPreco" type="number" min="0" step="0.01" placeholder="Preço" required />
+              <button type="submit">Salvar</button>
+            </form>
+            <p id="servicoMensagem" class="message"></p>
+          </div>
+
+          <div class="panel-box">
+            <h4>Serviços cadastrados</h4>
+            <div id="servicosList" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="clientes" class="view">
+          <div class="panel-box">
+            <h4>Novo cliente</h4>
+            <form id="clienteForm" class="inline-form">
+              <input id="clienteNome" placeholder="Nome" required />
+              <input id="clienteEmail" type="email" placeholder="Email" required />
+              <input id="clienteTelefone" placeholder="Telefone" />
+              <input id="clienteCpf" placeholder="CPF" />
+              <button type="submit">Salvar</button>
+            </form>
+            <p id="clienteMensagem" class="message"></p>
+          </div>
+
+          <div class="panel-box">
+            <h4>Clientes</h4>
+            <div id="clientesList" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="barbeiros" class="view">
+          <div class="panel-box">
+            <h4>Novo barbeiro</h4>
+            <form id="barbeiroForm" class="inline-form">
+              <input id="barbeiroNome" placeholder="Nome" required />
+              <input id="barbeiroEmail" type="email" placeholder="Email" required />
+              <input id="barbeiroTelefone" placeholder="Telefone" />
+              <button type="submit">Salvar</button>
+            </form>
+            <p id="barbeiroMensagem" class="message"></p>
+          </div>
+
+          <div class="panel-box">
+            <h4>Barbeiros</h4>
+            <div id="barbeirosList" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="agendamentos" class="view">
+          <div class="panel-box">
+            <h4>Novo agendamento</h4>
+            <form id="agendamentoForm" class="inline-form compact">
+              <select id="clienteId" required>
+                <option value="">Selecione um cliente</option>
+              </select>
+              <select id="barbeiroId" required>
+                <option value="">Selecione um barbeiro</option>
+              </select>
+              <select id="servicoId" required>
+                <option value="">Selecione um serviço</option>
+              </select>
+              <input id="dataHora" type="datetime-local" required />
+              <textarea id="observacoes" placeholder="Observações"></textarea>
+              <button type="submit">Agendar</button>
+            </form>
+            <p id="agendamentoMensagem" class="message"></p>
+          </div>
+
+          <div class="panel-box">
+            <h4>Agendamentos</h4>
+            <div id="agendamentosList" class="list-box"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>
