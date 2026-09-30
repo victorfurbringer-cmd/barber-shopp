@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cliente - Barber Shop</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="authScreen" class="auth-screen">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h1>Barbearia</h1>
+          <p>Cadastre-se e agende seu horário</p>
+        </div>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-tab="login">Login</button>
+          <button class="auth-tab" data-auth-tab="register">Cadastro</button>
+        </div>
+
+        <section id="loginPane" class="auth-pane active">
+          <form id="loginForm">
+            <input type="email" id="loginEmail" placeholder="Email" required />
+            <input type="password" id="loginSenha" placeholder="Senha" required />
+            <button type="submit">Entrar</button>
+          </form>
+          <p id="loginMensagem" class="message"></p>
+        </section>
+
+        <section id="registerPane" class="auth-pane">
+          <form id="registerForm">
+            <input type="text" id="registerNome" placeholder="Nome completo" required />
+            <input type="email" id="registerEmail" placeholder="Email" required />
+            <input type="password" id="registerSenha" placeholder="Senha" required />
+            <button type="submit">Cadastrar</button>
+          </form>
+          <p id="registerMensagem" class="message"></p>
+        </section>
+      </div>
+    </div>
+
+    <div id="appScreen" class="dashboard hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          <h2>Cliente</h2>
+        </div>
+
+        <nav class="nav-menu">
+          <button class="nav-btn active" data-view="home">Home</button>
+          <button class="nav-btn" data-view="servicos">Serviços</button>
+          <button class="nav-btn" data-view="agendamentos">Meus agendamentos</button>
+        </nav>
+
+        <button id="logoutButton" class="logout-btn">Sair</button>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <h3>Minha área</h3>
+            <p id="welcomeText">Bem-vindo</p>
+          </div>
+          <div id="userBadge" class="user-badge"></div>
+        </header>
+
+        <section id="home" class="view active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span>Agendamentos</span>
+              <strong id="totalAgendamentos">0</strong>
+            </div>
+            <div class="stat-card">
+              <span>Serviços</span>
+              <strong id="totalServicos">0</strong>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <h4>Próximos horários</h4>
+            <div id="pendingAppointments" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="servicos" class="view">
+          <div class="panel-box">
+            <h4>Serviços disponíveis</h4>
+            <div id="servicosList" class="list-box"></div>
+          </div>
+        </section>
+
+        <section id="agendamentos" class="view">
+          <div class="panel-box">
+            <h4>Agendar serviço</h4>
+            <form id="agendamentoForm" class="inline-form compact">
+              <select id="barbeiroId" required>
+                <option value="">Selecione um barbeiro</option>
+              </select>
+              <select id="servicoId" required>
+                <option value="">Selecione um serviço</option>
+              </select>
+              <input id="dataHora" type="datetime-local" required />
+              <textarea id="observacoes" placeholder="Observações"></textarea>
+              <button type="submit">Agendar</button>
+            </form>
+            <p id="agendamentoMensagem" class="message"></p>
+          </div>
+
+          <div class="panel-box">
+            <h4>Meus agendamentos</h4>
+            <div id="agendamentosList" class="list-box"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="cliente.js"></script>
+  </body>
+</html>
