@@ -1,10 +1,13 @@
+-- CreateEnum
+CREATE TYPE "TipoUsuario" AS ENUM ('CLIENTE', 'BARBEIRO', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "Usuario" (
     "id" SERIAL NOT NULL,
     "nome" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "senha" TEXT NOT NULL,
-    "tipo" TEXT NOT NULL DEFAULT 'CLIENTE',
+    "tipo" "TipoUsuario" NOT NULL DEFAULT 'CLIENTE',
 
     CONSTRAINT "Usuario_pkey" PRIMARY KEY ("id")
 );
