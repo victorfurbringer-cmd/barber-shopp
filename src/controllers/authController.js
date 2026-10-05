@@ -20,20 +20,21 @@ export async function registrar(req, res) {
       });
     }
 
-    const {
-      nome,
-      email,
-      senha,
-    } = req.body;
+    const { nome, email, senha } = req.body;
+    const nomeValido = typeof nome === "string" ? nome.trim() : "";
+    const emailValido = typeof email === "string" ? email.trim().toLowerCase() : "";
 
+    if (!nomeValido) {
+      return res.status(400).json({ mensagem: "Nome é obrigatório." });
+    }
 
-    // Verifica se já existe usuário com esse email
+    if (!emailValido || !emailValido.includes("@")) {
+      return res.status(400).json({ mensagem: "Email inválido." });
+    }
+
     const usuarioExistente = await prisma.usuario.findUnique({
-      where: {
-        email: email.toLowerCase(),
-      },
+      where: { email: emailValido },
     });
-
 
     if (usuarioExistente) {
       return res.status(409).json({
@@ -41,36 +42,53 @@ export async function registrar(req, res) {
       });
     }
 
-
-    // Criptografa a senha
     const senhaHash = await bcrypt.hash(senha, 12);
 
+    const resultado = await prisma.$transaction(async (tx) => {
+      const usuario = await tx.usuario.create({
+        data: {
+          nome: nomeValido,
+          email: emailValido,
+          senha: senhaHash,
+          tipo: "CLIENTE",
+        },
+      });
 
-    // Cria usuário
-    const usuario = await prisma.usuario.create({
-      data: {
-        nome,
-        email: email.toLowerCase(),
-        senha: senhaHash,
-        tipo: "CLIENTE",
-      },
+      const cliente = await tx.cliente.create({
+        data: {
+          nome: nomeValido,
+          email: emailValido,
+          telefone: null,
+          cpf: null,
+          usuarioId: usuario.id,
+        },
+      });
+
+      return { usuario, cliente };
     });
-
 
     return res.status(201).json({
-      mensagem: "Usuário cadastrado com sucesso.",
-
+      mensagem: "Cadastro realizado com sucesso. Você já pode fazer login.",
       usuario: {
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        tipo: usuario.tipo,
+        id: resultado.usuario.id,
+        nome: resultado.usuario.nome,
+        email: resultado.usuario.email,
+        tipo: resultado.usuario.tipo,
+      },
+      cliente: {
+        id: resultado.cliente.id,
+        nome: resultado.cliente.nome,
+        email: resultado.cliente.email,
       },
     });
-
   } catch (error) {
-
     console.error(error);
+
+    if (error.code === "P2002") {
+      return res.status(409).json({
+        mensagem: "Já existe um cliente cadastrado com este email.",
+      });
+    }
 
     return res.status(500).json({
       mensagem: "Erro interno do servidor.",
