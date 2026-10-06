@@ -64,6 +64,9 @@ export async function criarAgendamento(req, res) {
       prisma.servico.findUnique({ where: { id: Number(servicoId) } }),
       prisma.agendamento.findMany({
         where: { barbeiroId: Number(barbeiroId), status: { not: "CANCELADO" } },
+        include: {
+          servico: true,
+        },
       }),
     ]);
 
@@ -183,6 +186,9 @@ export async function atualizarAgendamento(req, res) {
       where: {
         barbeiroId: Number(dados.barbeiroId ?? agendamentoExistente.barbeiroId),
         status: { not: "CANCELADO" },
+      },
+      include: {
+        servico: true,
       },
     });
 

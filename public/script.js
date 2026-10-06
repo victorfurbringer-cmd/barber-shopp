@@ -22,6 +22,20 @@ function setMessage(elementId, message, type = '') {
   element.className = `message ${type}`.trim();
 }
 
+function formatAgendamentoError(message = '') {
+  const texto = String(message || '').toLowerCase();
+
+  if (texto.includes('horário') || texto.includes('barbeiro')) {
+    return 'Este horário já está indisponível para esse barbeiro. Escolha outro horário.';
+  }
+
+  if (texto.includes('cliente') || texto.includes('serviço')) {
+    return 'Não foi possível criar o agendamento. Verifique cliente, serviço e horário.';
+  }
+
+  return message || 'Não foi possível criar o agendamento.';
+}
+
 function showAuthPane(name) {
   authTabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.authTab === name));
   authPanes.forEach((pane) => pane.classList.toggle('active', pane.id === `${name}Pane`));
@@ -482,7 +496,7 @@ document.getElementById('agendamentoForm').addEventListener('submit', async (eve
     document.getElementById('agendamentoForm').reset();
     await loadDashboardData();
   } catch (error) {
-    setMessage('agendamentoMensagem', error.message, 'error');
+    setMessage('agendamentoMensagem', formatAgendamentoError(error.message), 'error');
   }
 });
 
