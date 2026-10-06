@@ -5,6 +5,7 @@ import {
   criarAgendamento,
   obterAgendamento,
   atualizarAgendamento,
+  concluirAgendamento,
   excluirAgendamento,
 } from "../controllers/agendamentoController.js";
 import { verificarToken } from "../middleware/authMiddleware.js";
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get("/", verificarToken, permitirTipos("ADMIN", "BARBEIRO", "CLIENTE"), listarAgendamentos);
 router.post("/", verificarToken, permitirTipos("ADMIN", "CLIENTE"), criarAgendamento);
 router.get("/:id", verificarToken, permitirTipos("ADMIN", "BARBEIRO", "CLIENTE"), obterAgendamento);
+router.patch("/:id/concluir", verificarToken, permitirTipos("ADMIN"), concluirAgendamento);
 router.put("/:id", verificarToken, permitirTipos("ADMIN", "BARBEIRO", "CLIENTE"), atualizarAgendamento);
 router.delete("/:id", verificarToken, permitirTipos("ADMIN"), excluirAgendamento);
 
