@@ -43,6 +43,32 @@ test("deve impedir conflito de horário para o mesmo barbeiro", () => {
   );
 });
 
+test("deve impedir sobreposição de horário pela duração do serviço", () => {
+  assert.throws(
+    () =>
+      validarAgendamento(
+        {
+          clienteId: 10,
+          barbeiroId: 2,
+          servicoId: 1,
+          dataHora: "2026-10-01T09:30:00",
+          status: "PENDENTE",
+        },
+        {
+          agendamentos: [
+            {
+              barbeiroId: 2,
+              dataHora: "2026-10-01T09:00:00",
+              status: "PENDENTE",
+              servico: { duracaoMinutos: 45 },
+            },
+          ],
+        }
+      ),
+    /horário|barbeiro/i
+  );
+});
+
 test("deve aceitar agendamento válido", () => {
   assert.doesNotThrow(() =>
     validarAgendamento(

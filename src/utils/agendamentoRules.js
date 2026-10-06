@@ -29,6 +29,10 @@ export function validarAgendamento(dados, contexto = {}) {
     throw new Error("Status do agendamento inválido.");
   }
 
+  const duracaoMinutos = Number(dados?.servico?.duracaoMinutos ?? dados?.duracaoMinutos ?? 0);
+  const inicioNovo = data.getTime();
+  const fimNovo = duracaoMinutos > 0 ? inicioNovo + duracaoMinutos * 60 * 1000 : inicioNovo + 60 * 1000;
+
   const conflito = agendamentos.some((agendamento) => {
     if (!agendamento || Number(agendamento.barbeiroId) !== Number(barbeiroId)) {
       return false;
@@ -38,8 +42,18 @@ export function validarAgendamento(dados, contexto = {}) {
       return false;
     }
 
+    if (Number(dados.id ?? 0) > 0 && Number(agendamento.id) === Number(dados.id)) {
+      return false;
+    }
+
     const outraData = new Date(agendamento.dataHora);
-    return outraData.getTime() === data.getTime();
+    const duracaoOutra = Number(
+      agendamento.servico?.duracaoMinutos ?? agendamento.duracaoMinutos ?? 0
+    );
+    const inicioOutra = outraData.getTime();
+    const fimOutra = duracaoOutra > 0 ? inicioOutra + duracaoOutra * 60 * 1000 : inicioOutra + 60 * 1000;
+
+    return inicioNovo < fimOutra && fimNovo > inicioOutra;
   });
 
   if (conflito) {

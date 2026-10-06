@@ -86,6 +86,7 @@ export async function criarAgendamento(req, res) {
         servicoId,
         dataHora,
         status: status || "PENDENTE",
+        servico: { duracaoMinutos: servico.duracaoMinutos },
       },
       { agendamentos }
     );
@@ -185,11 +186,16 @@ export async function atualizarAgendamento(req, res) {
       },
     });
 
+    const servicoAtual = dados.servicoId
+      ? await prisma.servico.findUnique({ where: { id: Number(dados.servicoId) } })
+      : await prisma.servico.findUnique({ where: { id: Number(agendamentoExistente.servicoId) } });
+
     validarAgendamento(
       {
         ...agendamentoExistente,
         ...dados,
         id,
+        servico: servicoAtual ? { duracaoMinutos: servicoAtual.duracaoMinutos } : undefined,
       },
       { agendamentos: agendamentosConflitantes }
     );
