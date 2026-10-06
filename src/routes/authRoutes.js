@@ -7,6 +7,7 @@ import {
 
 import { verificarToken } from "../middleware/authMiddleware.js";
 import { body } from "express-validator";
+import prisma from "../config/prisma.js";
 
 const router = express.Router();
 
@@ -72,9 +73,18 @@ router.post(
 // =====================================================
 
 router.get("/me", verificarToken, async (req, res) => {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: Number(req.usuario.id) },
+    select: { id: true, nome: true, email: true, tipo: true },
+  });
+
+  if (!usuario) {
+    return res.status(404).json({ mensagem: "Usuário não encontrado." });
+  }
+
   return res.status(200).json({
     mensagem: "Você está autenticado.",
-    usuario: req.usuario,
+    usuario,
   });
 });
 
