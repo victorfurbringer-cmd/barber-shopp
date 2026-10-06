@@ -6,18 +6,42 @@ export async function listarServicos(req, res) {
 }
 
 export async function criarServico(req, res) {
-  const { nome, descricao, duracaoMinutos, preco } = req.body;
+  try {
+    const { nome, descricao, duracaoMinutos, preco } = req.body;
 
-  const servico = await prisma.servico.create({
-    data: {
-      nome,
-      descricao,
-      duracaoMinutos: Number(duracaoMinutos),
-      preco: Number(preco),
-    },
-  });
+    const nomeValido = typeof nome === "string" ? nome.trim() : "";
+    const duracao = Number(duracaoMinutos);
+    const precoValor = Number(preco);
 
-  return res.status(201).json(servico);
+    if (!nomeValido) {
+      return res.status(400).json({ mensagem: "Nome do serviço é obrigatório." });
+    }
+
+    if (!Number.isFinite(duracao) || duracao <= 0) {
+      return res.status(400).json({ mensagem: "Duração do serviço deve ser maior que zero." });
+    }
+
+    if (!Number.isFinite(precoValor) || precoValor < 0) {
+      return res.status(400).json({ mensagem: "Preço do serviço é inválido." });
+    }
+
+    const servico = await prisma.servico.create({
+      data: {
+        nome: nomeValido,
+        descricao: descricao?.trim() || null,
+        duracaoMinutos: duracao,
+        preco: precoValor,
+      },
+    });
+
+    return res.status(201).json(servico);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      mensagem: "Erro ao criar serviço. Verifique os dados informados.",
+      detalhe: error.message,
+    });
+  }
 }
 
 export async function obterServico(req, res) {
