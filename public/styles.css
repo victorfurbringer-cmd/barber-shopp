@@ -511,6 +511,26 @@ body {
   line-height: 1.7;
 }
 
+.opening-days {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 20px;
+  padding: 9px 13px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.08);
+  color: #d5dbe4;
+  font-size: 0.85rem;
+}
+
+.opening-days > span:first-child {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.opening-days strong { color: var(--cream); }
+
 .hero-illustration {
   position: relative;
   display: grid;
@@ -683,6 +703,7 @@ body {
 
 .landing-footer {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 12px;
@@ -695,6 +716,31 @@ body {
 }
 
 .landing-footer span { color: var(--primary); }
+
+.instagram-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: 8px;
+  color: #f4e8d0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.instagram-link svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.instagram-link .instagram-dot { fill: currentColor; stroke: none; }
+.instagram-link span { color: inherit; }
+.instagram-link:hover,
+.instagram-link:focus-visible { color: var(--primary); }
 
 @keyframes pole-scroll {
   to { background-position: 0 64px; }
