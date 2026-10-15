@@ -1,5 +1,6 @@
 const API_URL = 'http://localhost:3000';
-const TOKEN_KEY = 'barber_cliente_token';
+const TOKEN_KEY = 'barber_token';
+const LEGACY_TOKEN_KEYS = ['barber_cliente_token', 'barber_admin_token'];
 
 const authTabs = document.querySelectorAll('.auth-tab');
 const authPanes = document.querySelectorAll('.auth-pane');
@@ -7,7 +8,9 @@ const navButtons = document.querySelectorAll('.nav-btn');
 const views = document.querySelectorAll('.view');
 
 const state = {
-  token: localStorage.getItem(TOKEN_KEY) || '',
+  token: localStorage.getItem(TOKEN_KEY)
+    || LEGACY_TOKEN_KEYS.map((key) => localStorage.getItem(key)).find(Boolean)
+    || '',
   usuario: null,
   servicos: [],
   barbeiros: [],
@@ -89,11 +92,13 @@ async function apiRequest(path, options = {}) {
 function saveToken(token) {
   state.token = token;
   localStorage.setItem(TOKEN_KEY, token);
+  LEGACY_TOKEN_KEYS.forEach((key) => localStorage.removeItem(key));
 }
 
 function clearToken() {
   state.token = '';
   localStorage.removeItem(TOKEN_KEY);
+  LEGACY_TOKEN_KEYS.forEach((key) => localStorage.removeItem(key));
 }
 
 function renderUserBadge() {
@@ -212,8 +217,12 @@ async function checkSession() {
     const data = await apiRequest('/auth/me', {
       headers: { Authorization: `Bearer ${state.token}` },
     });
+    if (data.usuario.tipo === 'ADMIN') {
+      window.location.replace('admin.html');
+      return;
+    }
     if (data.usuario.tipo !== 'CLIENTE') {
-      throw new Error('Esta área é somente para clientes.');
+      throw new Error('Este perfil ainda não possui um painel de acesso.');
     }
     state.usuario = data.usuario;
     authScreen.classList.add('hidden');
@@ -250,8 +259,13 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       body: JSON.stringify(payload),
     });
 
+    if (data.usuario.tipo === 'ADMIN') {
+      saveToken(data.token);
+      window.location.replace('admin.html');
+      return;
+    }
     if (data.usuario.tipo !== 'CLIENTE') {
-      throw new Error('Acesso restrito para clientes.');
+      throw new Error('Este perfil ainda não possui um painel de acesso.');
     }
 
     saveToken(data.token);
