@@ -1,8 +1,11 @@
 const API_URL = 'http://localhost:3000';
-const TOKEN_KEY = 'barber_admin_token';
+const TOKEN_KEY = 'barber_token';
+const LEGACY_TOKEN_KEYS = ['barber_admin_token', 'barber_cliente_token'];
 
 const state = {
-  token: localStorage.getItem(TOKEN_KEY) || '',
+  token: localStorage.getItem(TOKEN_KEY)
+    || LEGACY_TOKEN_KEYS.map((key) => localStorage.getItem(key)).find(Boolean)
+    || '',
   usuario: null,
   servicos: [],
   clientes: [],
@@ -12,7 +15,6 @@ const state = {
 
 const authScreen = document.getElementById('authScreen');
 const appScreen = document.getElementById('appScreen');
-const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
 const navButtons = document.querySelectorAll('.nav-btn');
 const views = document.querySelectorAll('.view');
@@ -67,14 +69,10 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
-function saveToken(token) {
-  state.token = token;
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
 function clearToken() {
   state.token = '';
   localStorage.removeItem(TOKEN_KEY);
+  LEGACY_TOKEN_KEYS.forEach((key) => localStorage.removeItem(key));
 }
 
 function renderUserBadge() {
@@ -258,8 +256,7 @@ async function loadDashboardData() {
 
 async function checkSession() {
   if (!state.token) {
-    authScreen.classList.remove('hidden');
-    appScreen.classList.add('hidden');
+    window.location.replace('cliente.html');
     return;
   }
 
@@ -268,7 +265,8 @@ async function checkSession() {
       headers: { Authorization: `Bearer ${state.token}` },
     });
     if (data.usuario.tipo !== 'ADMIN') {
-      throw new Error('Esta área é somente para administrador.');
+      window.location.replace('cliente.html');
+      return;
     }
     state.usuario = data.usuario;
     authScreen.classList.add('hidden');
@@ -277,42 +275,9 @@ async function checkSession() {
     await loadDashboardData();
   } catch (error) {
     clearToken();
-    authScreen.classList.remove('hidden');
-    appScreen.classList.add('hidden');
-    setMessage('loginMensagem', 'Sessão expirada, faça login novamente.', 'error');
+    window.location.replace('cliente.html');
   }
 }
-
-loginForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const payload = {
-    email: document.getElementById('loginEmail').value.trim(),
-    senha: document.getElementById('loginSenha').value,
-  };
-
-  try {
-    const data = await apiRequest('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-
-    if (data.usuario.tipo !== 'ADMIN') {
-      throw new Error('Esta área é somente para administrador.');
-    }
-
-    saveToken(data.token);
-    state.usuario = data.usuario;
-    setMessage('loginMensagem', 'Login realizado com sucesso!', 'success');
-    loginForm.reset();
-    authScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
-    renderUserBadge();
-    await loadDashboardData();
-  } catch (error) {
-    setMessage('loginMensagem', error.message, 'error');
-  }
-});
 
 logoutButton.addEventListener('click', () => {
   clearToken();
@@ -321,9 +286,7 @@ logoutButton.addEventListener('click', () => {
   state.clientes = [];
   state.barbeiros = [];
   state.agendamentos = [];
-  authScreen.classList.remove('hidden');
-  appScreen.classList.add('hidden');
-  loginForm.reset();
+  window.location.replace('cliente.html');
 });
 
 document.getElementById('servicoForm').addEventListener('submit', async (event) => {
