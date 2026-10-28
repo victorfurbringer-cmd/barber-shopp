@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Nova senha - Barber Shop</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="auth-screen">
+      <section class="auth-card recovery-card">
+        <div class="auth-header">
+          <h1>Crie uma nova senha</h1>
+          <p>Escolha uma senha com pelo menos 6 caracteres para voltar a acessar sua conta.</p>
+        </div>
+        <form id="resetForm" class="hidden">
+          <label for="newPassword">Nova senha</label>
+          <input id="newPassword" type="password" minlength="6" maxlength="128" autocomplete="new-password" required />
+          <label for="confirmPassword">Confirme a nova senha</label>
+          <input id="confirmPassword" type="password" minlength="6" maxlength="128" autocomplete="new-password" required />
+          <button id="resetButton" type="submit">Salvar nova senha</button>
+        </form>
+        <p id="resetMessage" class="message" role="status" aria-live="polite">Verificando link…</p>
+        <a id="loginLink" class="auth-helper-link hidden" href="cliente.html">Voltar para o login</a>
+      </section>
+    </main>
+    <script src="redefinir-senha.js"></script>
+  </body>
+</html>
