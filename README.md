@@ -115,12 +115,22 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/barbershopp"
 JWT_SECRET="barber-backend-secret-super-forte-2026-para-jwt-autenticacao"
 JWT_EXPIRES_IN="8h"
 PORT=3000
+APP_BASE_URL="http://localhost:3000"
+SMTP_HOST="smtp.seuprovedor.com"
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER="seu-email@dominio.com"
+SMTP_PASS="sua-senha-de-app"
+SMTP_FROM="Barber Shop <seu-email@dominio.com>"
 ```
 
 Importante:
 - Troque a senha do PostgreSQL conforme sua máquina.
 - Nunca compartilhe o .env em repositórios públicos.
 - O JWT_SECRET deve ser forte e único.
+- Configure o SMTP com as credenciais do provedor de e-mail. Sem essas variáveis, a recuperação de senha fica indisponível.
+- Em produção, APP_BASE_URL deve conter a URL HTTPS pública do site, sem barra no final.
+- Nunca envie ou versione senhas reais de SMTP; mantenha-as apenas no .env ou no gerenciador de segredos do ambiente.
 
 ---
 
