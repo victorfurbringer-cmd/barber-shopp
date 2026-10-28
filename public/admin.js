@@ -323,7 +323,7 @@ document.getElementById('clienteForm').addEventListener('submit', async (event) 
         nome: document.getElementById('clienteNome').value.trim(),
         email: document.getElementById('clienteEmail').value.trim(),
         telefone: document.getElementById('clienteTelefone').value.trim(),
-        cpf: document.getElementById('clienteCpf').value.trim(),
+        senha: document.getElementById('clienteSenha').value,
       }),
     });
 
