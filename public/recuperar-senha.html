@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recuperar senha - Barber Shop</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="auth-screen">
+      <section class="auth-card recovery-card">
+        <div class="auth-header">
+          <h1>Recuperar senha</h1>
+          <p>Informe o e-mail associado à sua conta. Se ele estiver cadastrado, enviaremos um link para criar uma nova senha.</p>
+        </div>
+        <form id="recoveryForm">
+          <label for="recoveryEmail">E-mail</label>
+          <input id="recoveryEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          <button id="recoveryButton" type="submit">Enviar link de recuperação</button>
+        </form>
+        <p id="recoveryMessage" class="message" role="status" aria-live="polite"></p>
+        <a class="auth-helper-link" href="cliente.html">Voltar para o login</a>
+      </section>
+    </main>
+    <script src="recuperar-senha.js"></script>
+  </body>
+</html>
