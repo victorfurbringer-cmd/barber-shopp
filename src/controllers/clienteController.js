@@ -44,10 +44,11 @@ export async function listarClientes(req, res) {
 
 export async function criarCliente(req, res) {
   try {
-    const { nome, email, telefone, cpf } = req.body;
+    const { nome, email, telefone, senha } = req.body;
 
     const nomeValido = typeof nome === "string" ? nome.trim() : "";
     const emailValido = typeof email === "string" ? email.trim().toLowerCase() : "";
+    const senhaValida = typeof senha === "string" ? senha : "";
 
     if (!nomeValido) {
       return res.status(400).json({ mensagem: "Nome do cliente é obrigatório." });
@@ -57,6 +58,10 @@ export async function criarCliente(req, res) {
       return res.status(400).json({ mensagem: "Email do cliente é inválido." });
     }
 
+    if (senhaValida.length < 6) {
+      return res.status(400).json({ mensagem: "A senha do cliente deve possuir pelo menos 6 caracteres." });
+    }
+
     const usuarioExistente = await prisma.usuario.findUnique({ where: { email: emailValido } });
     const clienteExistente = await prisma.cliente.findUnique({ where: { email: emailValido } });
 
@@ -64,19 +69,18 @@ export async function criarCliente(req, res) {
       return res.status(409).json({ mensagem: "Já existe um cliente ou usuário com este email." });
     }
 
-    const senhaTemp = await bcrypt.hash("temp-password", 12);
+    const senhaHash = await bcrypt.hash(senhaValida, 12);
 
     const cliente = await prisma.cliente.create({
       data: {
         nome: nomeValido,
         email: emailValido,
         telefone: telefone?.trim() || null,
-        cpf: cpf?.trim() || null,
         usuario: {
           create: {
             nome: nomeValido,
             email: emailValido,
-            senha: senhaTemp,
+            senha: senhaHash,
             tipo: "CLIENTE",
           },
         },
@@ -88,7 +92,7 @@ export async function criarCliente(req, res) {
     console.error(error);
 
     if (error.code === "P2002") {
-      return res.status(409).json({ mensagem: "Este email ou CPF já está em uso." });
+      return res.status(409).json({ mensagem: "Este email já está em uso." });
     }
 
     return res.status(500).json({ mensagem: "Erro ao criar cliente." });
