@@ -3,6 +3,9 @@ import express from "express";
 import {
   registrar,
   login,
+  solicitarRedefinicaoSenha,
+  redefinirSenha,
+  verificarTokenRedefinicao,
 } from "../controllers/authController.js";
 
 import { verificarToken } from "../middleware/authMiddleware.js";
@@ -10,6 +13,34 @@ import { body } from "express-validator";
 import prisma from "../config/prisma.js";
 
 const router = express.Router();
+const limiteRecuperacaoPorIp = new Map();
+const JANELA_RECUPERACAO_MS = 15 * 60 * 1000;
+const MAX_RECUPERACOES_POR_JANELA = 5;
+
+function limitarSolicitacoesRecuperacao(req, res, next) {
+  const agora = Date.now();
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const registros = (limiteRecuperacaoPorIp.get(ip) || []).filter(
+    (timestamp) => agora - timestamp < JANELA_RECUPERACAO_MS
+  );
+
+  if (registros.length >= MAX_RECUPERACOES_POR_JANELA) {
+    return res.status(429).json({ mensagem: "Muitas solicitações. Tente novamente mais tarde." });
+  }
+
+  registros.push(agora);
+  limiteRecuperacaoPorIp.set(ip, registros);
+
+  if (limiteRecuperacaoPorIp.size > 1000) {
+    for (const [chave, tentativas] of limiteRecuperacaoPorIp) {
+      if (tentativas.every((timestamp) => agora - timestamp >= JANELA_RECUPERACAO_MS)) {
+        limiteRecuperacaoPorIp.delete(chave);
+      }
+    }
+  }
+
+  return next();
+}
 
 
 // =====================================================
@@ -67,6 +98,38 @@ router.post(
 
   login
 );
+
+router.post(
+  "/solicitar-redefinicao-senha",
+  limitarSolicitacoesRecuperacao,
+  [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email é obrigatório.")
+      .isEmail()
+      .withMessage("Email inválido."),
+  ],
+  solicitarRedefinicaoSenha
+);
+
+router.post(
+  "/redefinir-senha",
+  [
+    body("token")
+      .isString()
+      .isLength({ min: 64, max: 64 })
+      .isHexadecimal()
+      .withMessage("Token inválido."),
+    body("senha")
+      .isString()
+      .isLength({ min: 6, max: 128 })
+      .withMessage("A senha deve possuir entre 6 e 128 caracteres."),
+  ],
+  redefinirSenha
+);
+
+router.get("/verificar-token-redefinicao", verificarTokenRedefinicao);
 
 // =====================================================
 // ROTA PROTEGIDA
